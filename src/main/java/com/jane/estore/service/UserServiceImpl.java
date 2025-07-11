@@ -9,6 +9,7 @@ public class UserServiceImpl implements UserService {
                            String email,
                            String password,
                            String confirmPassword) {
-        return new User();
+        User user = new User(firstName,lastName,email,password,confirmPassword);
+        return user;
     }
 }
