@@ -6,13 +6,13 @@ public class User {
     String email;
     String password;
     String confirmPassword;
+    String id;
 
-    public User(String firstName, String lastName, String email, String password, String confirmPassword) {
+    public User(String firstName, String lastName, String email, String id) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
-        this.confirmPassword = confirmPassword;
+        this.id = id;
     }
 
 
@@ -21,7 +21,15 @@ public class User {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getId() {
+        return id;
     }
 }
