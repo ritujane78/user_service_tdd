@@ -7,8 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
     UserService userService;
@@ -23,8 +22,8 @@ public class UserServiceTest {
         firstName = "Ritu";
         lastName = "Bafna";
         email = "ritujane78@gmail.com";
-        password = "test123";
-        confirmPassword = "test123";
+        password = "t est123@#$%123";
+        confirmPassword = "test1234@#$%123";
 
     }
     @DisplayName("User Object Created")
@@ -44,7 +43,7 @@ public class UserServiceTest {
 
     @DisplayName("Empty first name causes correct exception")
     @Test
-    void testCreateMethod_whenFirstNameIsEmpty_thowsIllegelArgumentException(){
+    void testCreateMethod_whenFirstNameIsEmpty_throwsIllegelArgumentException(){
 
 //        Arrange
         firstName = "";
@@ -60,4 +59,69 @@ public class UserServiceTest {
                 "Exception error message is not correct"
         );
     }
+
+    @DisplayName("Empty last name causes correct exception")
+    @Test
+    void testCreateMethod_whenLastNameIsEmpty_throwIllegalArgumentException(){
+        lastName = "";
+        String exceptionMessage = "User's last name is empty";
+
+//        Act & Assert
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            userService.createUser(firstName,lastName,email,password,confirmPassword);
+        }, "Empty last name should throw an exception");
+
+//    Assert
+        assertEquals(exceptionMessage, thrown.getMessage(),
+                "Exception message is incorrect");
+    }
+    @DisplayName("Empty email causes correct exception")
+    @Test
+    void testCreateMethod_whenEmailIsEmpty_throwIllegalArgumentException(){
+        email = "";
+        String exceptionMessage = "User's email is empty";
+
+//        Act & Assert
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            userService.createUser(firstName,lastName,email,password,confirmPassword);
+        }, "Empty email should throw an exception");
+
+//    Assert
+        assertEquals(exceptionMessage, thrown.getMessage(),
+                "Exception message is incorrect");
+    }
+    @DisplayName("Same password while confirming")
+    @Test
+    void testCreateMethod_whenPasswordAndConfirmSame_returnUserObject(){
+//        Act
+        User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
+
+//        Assert
+        assertTrue(user.getPassword() == user.getConfirmPassword(),"The password should match with the confirm password");
+
+    }
+
+    @DisplayName("Password is alphanumeric")
+    @Test
+    void testCreateMethod_whenPasswordNotAlphanumeric_returnUserObject(){
+//        Act
+        User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
+//        Assert
+        assertTrue(user.getPassword().matches("[a-zA-Z0-9]+"),"Password should be alphanumeric");
+    }
+
+    @DisplayName("Password length check")
+    @Test
+    void testCreateMethod_whenPassswordNotEnoughLength_returuenUserObject(){
+//        Arrange
+        int threshold = 12;
+
+//        Act
+        User user = userService.createUser(firstName, lastName,email,password,confirmPassword);
+
+//        Assert
+        assertTrue(user.getPassword().length() > threshold, "String length should be greater than " +threshold);
+
+    }
 }
+

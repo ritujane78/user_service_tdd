@@ -14,7 +14,13 @@ public class UserServiceImpl implements UserService {
         if(firstName == null || firstName.trim().length() == 0){
             throw new IllegalArgumentException("User's first name is empty");
         }
-        User user = new User(firstName,lastName,email,UUID.randomUUID().toString());
+        if(lastName == null || lastName.trim().length() == 0){
+            throw new IllegalArgumentException("User's last name is empty");
+        }
+        if(email == null || email.trim().length() == 0){
+            throw new IllegalArgumentException("User's email is empty");
+        }
+        User user = new User(firstName,lastName,email,UUID.randomUUID().toString(), password,confirmPassword);
         return user;
     }
 }
