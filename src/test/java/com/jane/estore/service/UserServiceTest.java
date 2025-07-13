@@ -92,7 +92,7 @@ public class UserServiceTest {
     }
     @DisplayName("Same password while confirming")
     @Test
-    void testCreateMethod_whenPasswordAndConfirmSame_returnUserObject(){
+    void testCreateMethod_whenPasswordAndConfirmNotSame_returnUserObject(){
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 
