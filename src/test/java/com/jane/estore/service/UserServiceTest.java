@@ -1,16 +1,28 @@
 package com.jane.estore.service;
 
+import com.jane.estore.data.UsersRepository;
 import com.jane.estore.model.User;
 import com.jane.estore.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    UserService userService;
+
+    @InjectMocks
+    UserServiceImpl userService;
+
+    @Mock
+    UsersRepository usersRepository;
     String firstName ;
     String lastName ;
     String email;
@@ -18,7 +30,6 @@ public class UserServiceTest {
     String confirmPassword;
     @BeforeEach
     void init(){
-        userService = new UserServiceImpl();
         firstName = "Ritu";
         lastName = "Bafna";
         email = "ritujane78@gmail.com";
@@ -29,7 +40,8 @@ public class UserServiceTest {
     @DisplayName("User Object Created")
     @Test
     void teatCreateUser_whenUserDetailsProvided_returnUserProject() {
-
+//        Arrange
+        Mockito.when(usersRepository.save(Mockito.any(User.class))).thenReturn(true);
 //        Act
         User user = userService.createUser(firstName,lastName,email,password,confirmPassword);
 
@@ -92,7 +104,7 @@ public class UserServiceTest {
     }
     @DisplayName("Same password while confirming")
     @Test
-    void testCreateMethod_whenPasswordAndConfirmNotSame_returnUserObject(){
+    void testCreateMethod_whenPasswordAndConfirmSame_returnUserObject(){
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 

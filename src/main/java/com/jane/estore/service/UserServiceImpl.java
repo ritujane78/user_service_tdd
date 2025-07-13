@@ -1,10 +1,16 @@
 package com.jane.estore.service;
 
+import com.jane.estore.data.UsersRepository;
 import com.jane.estore.model.User;
 
 import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
+    UsersRepository usersRepository;
+
+    public UserServiceImpl(UsersRepository usersRepository){
+        this.usersRepository = usersRepository;
+    }
     @Override
     public User createUser(String firstName,
                            String lastName,
@@ -21,6 +27,9 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User's email is empty");
         }
         User user = new User(firstName,lastName,email,UUID.randomUUID().toString(), password,confirmPassword);
+        boolean isUserCreated = usersRepository.save(user);
+
+        if(!isUserCreated) throw new UserServiceException("Could not create user.");
         return user;
     }
 }
