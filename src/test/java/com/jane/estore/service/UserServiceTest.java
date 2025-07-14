@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -39,9 +40,9 @@ public class UserServiceTest {
     }
     @DisplayName("User Object Created")
     @Test
-    void teatCreateUser_whenUserDetailsProvided_returnUserProject() {
+    void testCreateUser_whenUserDetailsProvided_returnUserProject() {
 //        Arrange
-        Mockito.when(usersRepository.save(Mockito.any(User.class))).thenReturn(true);
+        Mockito.when(usersRepository.save(any(User.class))).thenReturn(true);
 //        Act
         User user = userService.createUser(firstName,lastName,email,password,confirmPassword);
 
@@ -51,6 +52,9 @@ public class UserServiceTest {
         assertEquals(lastName,user.getLastName(),"Last Name of the user is incorrect.");
         assertEquals(email,user.getEmail(),"Email of the user is incorrect.");
         assertNotNull(user.getId(), " user id cannot be null");
+
+        Mockito.verify(usersRepository)
+                .save(any(User.class));
     }
 
     @DisplayName("Empty first name causes correct exception")
@@ -134,6 +138,20 @@ public class UserServiceTest {
 //        Assert
         assertTrue(user.getPassword().length() > threshold, "String length should be greater than " +threshold);
 
+    }
+
+    @DisplayName("if save() throws RunTimeException , a UserServiceException is thrown.")
+    @Test
+    void testCreateMethod_whenSaveMethodThrowsException_ThenThrowsUserServiceException(){
+//        Arrange
+        when(usersRepository.save(any(User.class))).thenThrow(RuntimeException.class);
+
+//        Act & Assert
+        assertThrows(RuntimeException.class, ()-> {
+            userService.createUser(firstName,lastName,email,password,confirmPassword);
+        }, "Should have thrown a UserServiceException instead");
+
+//        Assert
     }
 }
 

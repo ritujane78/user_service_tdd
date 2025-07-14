@@ -27,7 +27,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User's email is empty");
         }
         User user = new User(firstName,lastName,email,UUID.randomUUID().toString(), password,confirmPassword);
-        boolean isUserCreated = usersRepository.save(user);
+        boolean isUserCreated;
+
+        try{
+            isUserCreated = usersRepository.save(user);
+        } catch(RuntimeException ex){
+            throw new UserServiceException(ex.getMessage());
+        }
 
         if(!isUserCreated) throw new UserServiceException("Could not create user.");
         return user;
