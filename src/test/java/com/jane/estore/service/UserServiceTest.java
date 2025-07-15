@@ -24,6 +24,9 @@ public class UserServiceTest {
 
     @Mock
     UsersRepository usersRepository;
+
+    @Mock
+    EmailNotificationService emailNotificationService;
     String firstName ;
     String lastName ;
     String email;
@@ -59,7 +62,7 @@ public class UserServiceTest {
 
     @DisplayName("Empty first name causes correct exception")
     @Test
-    void testCreateMethod_whenFirstNameIsEmpty_throwsIllegelArgumentException(){
+    void testCreateUser_whenFirstNameIsEmpty_throwsIllegelArgumentException(){
 
 //        Arrange
         firstName = "";
@@ -78,7 +81,7 @@ public class UserServiceTest {
 
     @DisplayName("Empty last name causes correct exception")
     @Test
-    void testCreateMethod_whenLastNameIsEmpty_throwIllegalArgumentException(){
+    void testCreateUser_whenLastNameIsEmpty_throwIllegalArgumentException(){
         lastName = "";
         String exceptionMessage = "User's last name is empty";
 
@@ -93,7 +96,7 @@ public class UserServiceTest {
     }
     @DisplayName("Empty email causes correct exception")
     @Test
-    void testCreateMethod_whenEmailIsEmpty_throwIllegalArgumentException(){
+    void testCreateUser_whenEmailIsEmpty_throwIllegalArgumentException(){
         email = "";
         String exceptionMessage = "User's email is empty";
 
@@ -108,7 +111,7 @@ public class UserServiceTest {
     }
     @DisplayName("Same password while confirming")
     @Test
-    void testCreateMethod_whenPasswordAndConfirmSame_returnUserObject(){
+    void testCreateUser_whenPasswordAndConfirmSame_returnUserObject(){
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 
@@ -119,7 +122,7 @@ public class UserServiceTest {
 
     @DisplayName("Password is alphanumeric")
     @Test
-    void testCreateMethod_whenPasswordNotAlphanumeric_returnUserObject(){
+    void testCreateUser_whenPasswordNotAlphanumeric_returnUserObject(){
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 //        Assert
@@ -128,7 +131,7 @@ public class UserServiceTest {
 
     @DisplayName("Password length check")
     @Test
-    void testCreateMethod_whenPassswordNotEnoughLength_returuenUserObject(){
+    void testCreateUser_whenPassswordNotEnoughLength_returuenUserObject(){
 //        Arrange
         int threshold = 12;
 
@@ -142,7 +145,7 @@ public class UserServiceTest {
 
     @DisplayName("if save() throws RunTimeException , a UserServiceException is thrown.")
     @Test
-    void testCreateMethod_whenSaveMethodThrowsException_ThenThrowsUserServiceException(){
+    void testCreateUser_whenSaveMethodThrowsException_ThenThrowsUserServiceException(){
 //        Arrange
         when(usersRepository.save(any(User.class))).thenThrow(RuntimeException.class);
 
@@ -152,6 +155,25 @@ public class UserServiceTest {
         }, "Should have thrown a UserServiceException instead");
 
 //        Assert
+    }
+//  Stubbing in void methods
+    @DisplayName("EmailNotificationService is handled")
+    @Test
+    void testCreateUser_whenEmailExceptionThrown_throwUserException(){
+//        Arrange
+        when(usersRepository.save(any(User.class))).thenReturn(true);
+
+        doThrow(EmailNotificationServiceException.class)
+                .when(emailNotificationService)
+                .scheduleEmailConfirmation(any(User.class));
+//  `  Act
+        assertThrows(UserServiceException.class, () -> {
+            userService.createUser(firstName,lastName,email,password,confirmPassword);
+        },"Should have thrown userException Instead");
+
+//        Assert
+        verify(emailNotificationService).scheduleEmailConfirmation(any(User.class));
+
     }
 }
 

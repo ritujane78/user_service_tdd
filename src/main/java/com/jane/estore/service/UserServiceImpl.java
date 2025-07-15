@@ -7,9 +7,12 @@ import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
     UsersRepository usersRepository;
+    EmailNotificationService emailNotificationService;
 
-    public UserServiceImpl(UsersRepository usersRepository){
+    public UserServiceImpl(UsersRepository usersRepository, EmailNotificationService emailNotificationService){
         this.usersRepository = usersRepository;
+        this.emailNotificationService = emailNotificationService;
+
     }
     @Override
     public User createUser(String firstName,
@@ -36,6 +39,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if(!isUserCreated) throw new UserServiceException("Could not create user.");
+
+        try{
+            emailNotificationService.scheduleEmailConfirmation(user);
+        } catch(RuntimeException ex){
+            throw new UserServiceException(ex.getMessage());
+        }
         return user;
     }
 }
