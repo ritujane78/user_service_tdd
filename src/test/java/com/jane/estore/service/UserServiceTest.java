@@ -26,7 +26,7 @@ public class UserServiceTest {
     UsersRepository usersRepository;
 
     @Mock
-    EmailNotificationService emailNotificationService;
+    EmailNotificationServiceImpl emailNotificationService;
     String firstName ;
     String lastName ;
     String email;
@@ -37,9 +37,8 @@ public class UserServiceTest {
         firstName = "Ritu";
         lastName = "Bafna";
         email = "ritujane78@gmail.com";
-        password = "t est123@#$%123";
-        confirmPassword = "test1234@#$%123";
-
+        password = "test123";
+        confirmPassword = "test123";
     }
     @DisplayName("User Object Created")
     @Test
@@ -112,6 +111,8 @@ public class UserServiceTest {
     @DisplayName("Same password while confirming")
     @Test
     void testCreateUser_whenPasswordAndConfirmSame_returnUserObject(){
+//        Arrange
+        when(usersRepository.save(any(User.class))).thenReturn(true);
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 
@@ -123,6 +124,10 @@ public class UserServiceTest {
     @DisplayName("Password is alphanumeric")
     @Test
     void testCreateUser_whenPasswordNotAlphanumeric_returnUserObject(){
+//        Arrange
+        password = "Test1234";
+        confirmPassword = "Test1234";
+        when(usersRepository.save(any(User.class))).thenReturn(true);
 //        Act
         User user = userService.createUser(firstName,lastName, email, password, confirmPassword);
 //        Assert
@@ -133,6 +138,9 @@ public class UserServiceTest {
     @Test
     void testCreateUser_whenPassswordNotEnoughLength_returuenUserObject(){
 //        Arrange
+        password = "StrongPass123";
+        confirmPassword = "StrongPass123";
+        when(usersRepository.save(any(User.class))).thenReturn(true);
         int threshold = 12;
 
 //        Act
@@ -153,8 +161,6 @@ public class UserServiceTest {
         assertThrows(RuntimeException.class, ()-> {
             userService.createUser(firstName,lastName,email,password,confirmPassword);
         }, "Should have thrown a UserServiceException instead");
-
-//        Assert
     }
 //  Stubbing in void methods
     @DisplayName("EmailNotificationService is handled")
@@ -171,9 +177,27 @@ public class UserServiceTest {
             userService.createUser(firstName,lastName,email,password,confirmPassword);
         },"Should have thrown userException Instead");
 
+
 //        Assert
         verify(emailNotificationService).scheduleEmailConfirmation(any(User.class));
 
+    }
+
+    @DisplayName("Schedule email notification is executed")
+    @Test
+    void testCreateUser_whenUserIsCreated_schedulesEmailConfirmation(){
+//      Arrange
+        when(usersRepository.save(any(User.class))).thenReturn(true);
+
+        doCallRealMethod().when(emailNotificationService)
+                .scheduleEmailConfirmation(any(User.class));
+
+//        Act
+        userService.createUser(firstName,lastName,email,password,confirmPassword);
+
+//        Assert
+        verify(emailNotificationService)
+                .scheduleEmailConfirmation(any(User.class));
     }
 }
 
