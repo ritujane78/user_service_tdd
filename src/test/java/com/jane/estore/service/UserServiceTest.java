@@ -136,7 +136,7 @@ public class UserServiceTest {
 
     @DisplayName("Password length check")
     @Test
-    void testCreateUser_whenPassswordNotEnoughLength_returuenUserObject(){
+    void testCreateUser_whenPassswordNotEnoughLength_returnUserObject(){
 //        Arrange
         password = "StrongPass123";
         confirmPassword = "StrongPass123";
@@ -153,7 +153,7 @@ public class UserServiceTest {
 
     @DisplayName("if save() throws RunTimeException , a UserServiceException is thrown.")
     @Test
-    void testCreateUser_whenSaveMethodThrowsException_ThenThrowsUserServiceException(){
+    void testCreateUser_whenSaveMethodThrowsException_ThrowsUserServiceException(){
 //        Arrange
         when(usersRepository.save(any(User.class))).thenThrow(RuntimeException.class);
 
